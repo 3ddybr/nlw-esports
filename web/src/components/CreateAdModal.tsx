@@ -25,7 +25,7 @@ export function CreateAdModal() {
   }, []);
 
   async function handleCreateAd(event: FormEvent) {
-    event.preventDefault();
+    // event.preventDefault();
 
     const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData);

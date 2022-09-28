@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
-import { Image, View, FlatList } from "react-native";
+import { Image, FlatList } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 import logoImg from "../../assets/logo-nlw-esports.png";
 
-import { GameCard } from "../../components/GameCard";
+import { GameCard, GameCardProps } from "../../components/GameCard";
+import { Background } from "../../components/Background";
 import { Heading } from "../../components/Heading";
 
 import { styles } from "./styles";
 
-interface Game {
-  id: string;
-  title: string;
-  bannerUrl: string;
-  _count: {
-    ads: number;
-  };
-}
-
 export function Home() {
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<GameCardProps[]>([]);
+
+  const navigation = useNavigation();
+
+  function handleOpenGaming({ id, title, bannerUrl }: GameCardProps) {
+    navigation.navigate("game", { id, title, bannerUrl });
+  }
 
   useEffect(() => {
     fetch("http://192.168.15.3:3333/games")
@@ -27,26 +27,26 @@ export function Home() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Image style={styles.logo} source={logoImg} />
-      <Heading
-        title="Encontre seu duo!"
-        subtitle="Selecione o game que deseja jogar ..."
-      />
+    <Background>
+      <SafeAreaView style={styles.container}>
+        <Image source={logoImg} style={styles.logo} />
 
-      <FlatList
-        data={games}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <GameCard
-            data={item}
-            // onPress={() => handleOpenGaming(item)}
-          />
-        )}
-        showsHorizontalScrollIndicator={false}
-        horizontal
-        contentContainerStyle={styles.contentList}
-      />
-    </View>
+        <Heading
+          title="Encontre seu duo!"
+          subtitle="Selecione o game que deseja jogar..."
+        />
+
+        <FlatList
+          data={games}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <GameCard data={item} onPress={() => handleOpenGaming(item)} />
+          )}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          contentContainerStyle={styles.contentList}
+        />
+      </SafeAreaView>
+    </Background>
   );
 }
